@@ -53,7 +53,7 @@ cat > $OSSRH_DEPLOY_SETTINGS_XML << SETTINGS.XML
 </settings>
 SETTINGS.XML
 
-mvn --settings $OSSRH_DEPLOY_SETTINGS_XML -DskipTests clean deploy
+mvn --settings $OSSRH_DEPLOY_SETTINGS_XML -DskipTests clean package
 #white source
 whitesource/run_whitesource.sh
 
