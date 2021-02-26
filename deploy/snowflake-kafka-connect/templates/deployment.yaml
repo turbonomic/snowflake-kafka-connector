@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.connectrepository }}:{{ .Values.image.connecttag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
 {{ toYaml .Values.env | indent 8 }}
@@ -33,6 +33,23 @@ spec:
           httpGet:
             path: /
             port: 8083
+        resources:
+        {{- toYaml .Values.resources | nindent 12 }}
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+        - mountPath: /tmp
+          name: snowflake-tmpfs0
+      - name: exporter
+        image: "{{ .Values.image.exporterrepository }}:{{ .Values.image.exportertag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - --namespace={{ .Release.Namespace }}
+        - --mode={{ .Values.args.mode }}
+        - --loglevel={{ .Values.args.loglevel }}
         resources:
         {{- toYaml .Values.resources | nindent 12 }}
         securityContext:

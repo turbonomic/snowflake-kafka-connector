@@ -21,12 +21,13 @@ spec:
         env:
         - name: LOG_DIR
           value: /tmp/logs
-#        - name: KAFKA_OPTS
-#          value: "-Dhttp.useProxy=true -Dhttps.useProxy=true
-#                  -Dhttp.proxyHost=<proxyHost> -Dhttp.proxyPort=<proxyPort>
-#                  -Dhttps.proxyHost=<proxyHostHTTPS> -Dhttps.proxyPort=<proxyPortHTTPS>
-#                  -Dhttp.proxyUser=<ProxyUser> -Dhttp.proxyPassword=<ProxyPassword>
-#                  -Dhttps.proxyUser=<ProxyUserHTTPS> -Dhttps.proxyPassword=<ProxyPasswordHTTPS>"
+        - name: KAFKA_OPTS
+          value: >-
+                  -Dhttp.useProxy=true -Dhttps.useProxy=true
+                  -Dhttp.proxyHost=<proxyHost> -Dhttp.proxyPort=<proxyPort>
+                  -Dhttps.proxyHost=<proxyHostHTTPS> -Dhttps.proxyPort=<proxyPortHTTPS>
+                  -Dhttp.proxyUser=<ProxyUser> -Dhttp.proxyPassword=<ProxyPassword>
+                  -Dhttps.proxyUser=<ProxyUserHTTPS> -Dhttps.proxyPassword=<ProxyPasswordHTTPS>
         ports:
         - name: http
           containerPort: 8083
@@ -38,6 +39,24 @@ spec:
         resources:
           limits:
             memory: 2Gi
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+        - mountPath: /tmp
+          name: snowflake-tmpfs0
+      - name: exporter
+        image: turbonomic/exporter
+        imagePullPolicy: IfNotPresent
+#        args:
+#        - --namespace=customer
+#        - --mode=stdout
+#        - --loglevel=DEBUG
+        resources:
+          limits:
+            memory: 12Gi
         securityContext:
           readOnlyRootFilesystem: true
           capabilities:
