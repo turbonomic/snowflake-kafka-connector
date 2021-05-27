@@ -30,9 +30,7 @@ mkdir -p ${builddir}/libs
 #echo "Copy over snowflake-kafka-connect jar ..."
 #cp target/snowflake-kafka-connect-${jarversion}.jar ${builddir}/connectors
 # Add Snowflake connector jar
-curl -sSL "https://repo1.maven.org/maven2/com/snowflake/snowflake-kafka-connector/1.5.1/snowflake-kafka-connector-1.5.1.jar" -o ${builddir}/connectors/snowflake-kafka-connector-1.5.1.jar
-# Add Snowflake JDBC connector jar
-curl -sSL "https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.12.15/snowflake-jdbc-3.12.15.jar" -o ${builddir}/connectors/snowflake-jdbc-connector-3.12.15.jar
+curl -sSL "https://repo1.maven.org/maven2/com/snowflake/snowflake-kafka-connector/1.5.4/snowflake-kafka-connector-1.5.4.jar" -o ${builddir}/connectors/snowflake-kafka-connector-1.5.4.jar
 # Install the below jars
 curl -sSL "https://repo1.maven.org/maven2/org/bouncycastle/bc-fips/1.0.2/bc-fips-1.0.2.jar" -o ${builddir}/libs/bc-fips-1.0.2.jar
 curl -sSL "https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-fips/1.0.4/bcpkix-fips-1.0.4.jar" -o ${builddir}/libs/bcpkix-fips-1.0.4.jar

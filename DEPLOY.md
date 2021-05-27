@@ -15,13 +15,42 @@ https://github.com/snowflakedb/snowflake-kafka-connector
 The Turbonomic Exporter makes it easy for Turbonomic Administrators to export time-series metrics
 with topology context to Snowflake. Packaged as a container it can be easily deployed either using helm or a simple yaml.
 
-## Installing the Turbonomic Exporter from a yaml file
+## Installing the Turbonomic Extractor using the Turbonomic Platform Operator (t8c-operator)
 ````
-kubectl create -f https://raw.githubusercontent.com/turbonomic/snowflake-kafka-connector/turbonomic/deploy/snowflake-kafka-connect_yamls/deployment.yaml -n turbonomic
+spec:
+
+  extractor:
+    enabled: true
+    snowflake:
+      enabled: true
+
+  properties:
+    extractor:
+      enableDataExtraction: true
+      actionExtractionIntervalMins: 10
 ````
-## Installing the Turbonomic Exporter using helm
+### Optionally you can specify a http/https proxy if required 
 ````
-helm install snowflake-kafka-connect snowflake-kafka-connect -n turbonomic
+spec:
+
+  extractor:
+    enabled: true
+    snowflake:
+      enabled: true
+    kafka:
+      env:
+        - name: LOG_DIR
+          value: /tmp/logs
+        - name: KAFKA_OPTS
+          value: >-
+                -Dhttp.useProxy=true -Dhttps.useProxy=true
+                -Dhttp.proxyHost=<PROXY_IP> -Dhttp.proxyPort=<PROXY_PORT>
+                -Dhttps.proxyHost=<PROXY_IP> -Dhttps.proxyPort=<PROXY_PORT>
+  properties:
+    extractor:
+      enableDataExtraction: true
+      actionExtractionIntervalMins: 10
+
 ````
 
 This component expects that you subscribed to Snowflake and Snowflake is accessible from where Turbo 8 runs
@@ -32,12 +61,10 @@ $ curl snowflake-kafka-connect:8083/connectors -X POST -H "Content-Type: applica
 {
  "name":"snowflake-kafka-connect",
  "config":{
+   "buffer.size.bytes":"100000000",
    "connector.class":"com.snowflake.kafka.connector.SnowflakeSinkConnector",
-   "tasks.max":"1",
    "topics":"<Your Topic Name>",
    "snowflake.topic2table.map": "<Your Topic Name>:<Your Table Name>",
-   "buffer.count.records":"1000",
-   "buffer.size.bytes":"1048576",
    "snowflake.url.name":"ACCOUNT.snowflakecomputing.com",
    "snowflake.user.name":"<Your User Name>",
    "snowflake.private.key":"<Your private Key>",
@@ -56,14 +83,11 @@ $ curl snowflake-kafka-connect:8083/connectors -X POST -H "Content-Type: applica
 At which point the data will start flowing into the specified Snowflake table, from the exporter topic from Turbonomic 8
 
 
-### Delete the Turbonomic Exporter from a yaml file
-
+### Delete the Turbonomic Extractor by removing the additional lines from the CR
 ````
-kubectl delete -f https://raw.githubusercontent.com/turbonomic/snowflake-kafka-connector/turbonomic/deploy/snowflake-kafka-connect_yamls/deployment.yaml -n turbonomic
-````
+spec:
 
-### Delete the Turbonomic Exporter using helm
+  extractor:
+    enabled: ...
 
-````
-helm delete snowflake-kafka-connect -n turbonomic
 ````
